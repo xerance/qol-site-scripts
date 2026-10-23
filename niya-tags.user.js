@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name         NiyaTags
-// @namespace    https://github.com/polo2005x/niya-visited
+// @namespace    https://github.com/xerance/qol-site-scripts
 // @version      2.3.1
 // @description  Your own "My Tags" for niyaniya.moe / hdoujin.org / shupogaki.moe — group tags into any number of highlight/warn groups, each with its own color; matching galleries get colored chips + ring. Settings window + on-page tagging included.
-// @author       you
+// @author       xerance
 // @match        *://niyaniya.moe/*
 // @match        *://hdoujin.org/*
 // @match        *://shupogaki.moe/*

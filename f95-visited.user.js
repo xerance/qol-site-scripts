@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name         F95Visited
-// @namespace    https://github.com/polo2005x/niya-visited
+// @namespace    https://github.com/xerance/qol-site-scripts
 // @version      1.1.0
 // @description  Highlight visited games + "last viewed" timestamp on F95zone's Latest Updates (SAM), and flag games that have a new version since you last viewed them.
-// @author       you
+// @author       xerance
 // @match        https://f95zone.to/sam/*
 // @match        https://f95zone.to/threads/*
 // @run-at       document-idle

@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name         NiyaVisited
-// @namespace    https://github.com/polo2005x/niya-visited
+// @namespace    https://github.com/xerance/qol-site-scripts
 // @version      2.1.3
 // @description  Highlight visited galleries + show a "last viewed" timestamp. Shared history across the mirrors (niyaniya.moe / shupogaki.moe); hdoujin.org tracked separately (it has its own gallery ids)
-// @author       you
+// @author       xerance
 // @match        *://niyaniya.moe/*
 // @match        *://hdoujin.org/*
 // @match        *://shupogaki.moe/*
