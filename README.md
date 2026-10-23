@@ -37,6 +37,13 @@ clicks on site links away from the ad script's listeners so galleries open in th
 (Ctrl/middle-click still open a new tab). Trade-off: navigation does full page loads instead of
 the site's in-page routing.
 
+### CumstVideoViewer — `cumst-video-viewer.user.js`
+For **cum.st** (OnlyHaven) post pages. In the video viewer, **double-click toggles
+fullscreen**, and the viewer **only closes with its X button**: clicks on the dark margin
+around the player and the Escape key no longer close it (Escape still leaves fullscreen).
+A single click still plays/pauses. On desktop, double-clicking the left/right side no longer
+seeks ±10s; double-tap seeking on touch screens is unchanged.
+
 ## Install
 
 1. Install **Violentmonkey** or **Tampermonkey**.
