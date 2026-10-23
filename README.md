@@ -1,7 +1,8 @@
-# visited-qol-site-scripts
+# qol-site-scripts
 
-A small collection of quality-of-life userscripts that track **what you've already seen**
-on a few sites — visited items, timestamps, update flags, and a personal tag system.
+A small collection of quality-of-life userscripts for a few sites — tracking **what you've
+already seen** (visited items, timestamps, update flags, a personal tag system) and getting
+rid of annoyances like popunder ads.
 
 All are plain userscripts for **Violentmonkey / Tampermonkey**. They store everything
 client-side (your userscript manager / the site's `localStorage`) and need no account or
@@ -27,6 +28,14 @@ For **f95zone.to** (the Latest Updates / SAM grid). **Fades games you've opened*
 ones pop, shows a "last viewed" timestamp, and flags games with an **⬆ UPDATE** badge when
 their version is newer than the one you last saw.
 → details in [README-f95.md](README-f95.md)
+
+### CumstNoPopunders — `cumst-no-popunders.user.js`
+For **cum.st** (OnlyHaven). Stops the ExoClick "popMagic" popunder that opens an ad window
+when you click a gallery card. It blocks the ad loader script, only lets `window.open` open
+cum.st URLs, cancels script-generated clicks/form submits to other sites, and keeps your real
+clicks on site links away from the ad script's listeners so galleries open in the same tab
+(Ctrl/middle-click still open a new tab). Trade-off: navigation does full page loads instead of
+the site's in-page routing.
 
 ## Install
 
