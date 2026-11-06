@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         CumstVisited
 // @namespace    https://github.com/xerance/qol-site-scripts
-// @version      1.3.0
+// @version      1.3.1
 // @description  cum.st (OnlyHaven): fade posts, DMs and creators you've already opened and show a "last viewed" timestamp on each, so unseen ones pop out of the grid. A button in the site's toolbar (or Alt+V) hides visited cards entirely.
 // @author       xerance
 // @match        *://cum.st/*
@@ -240,15 +240,22 @@
     ╚───────────────────────────────────────────────────────────────────────*/
     let btn = null, btnText = null;
 
-    // The site's own sticky toolbar: `div.sticky.top-0` wrapping a `flex gap-2`
-    // row that holds the search box and the Filters button. It's the same on
-    // /posts, /creators, /dms and a creator's own page. Requiring the input
-    // keeps us from landing in some other sticky bar.
+    // The site's own sticky toolbar, `div#grid-controls`, wrapping a `flex
+    // gap-2` row that holds whatever controls the listing has: a search box and
+    // Filters on /posts and /creators, a Day/Week/Month segment and Filters on
+    // /posts/popular. The id is the reliable anchor — an earlier version looked
+    // for a sticky bar containing an <input>, which missed every listing with
+    // no search box. That search is kept as a fallback, and accepts a row of
+    // buttons too, in case the id ever changes.
     function toolbarSlot() {
         if (!BUTTON_IN_BAR) return null;
-        const bar = document.querySelector('div.sticky.top-0');
-        const row = bar && bar.querySelector('div.flex.gap-2');
-        return row && row.querySelector('input') ? row : null;
+        const byId = document.querySelector('div#grid-controls > div.flex.gap-2');
+        if (byId) return byId;
+        for (const bar of document.querySelectorAll('div.sticky.top-0')) {
+            const row = bar.querySelector('div.flex.gap-2');
+            if (row && row.querySelector('input, button')) return row;
+        }
+        return null;
     }
 
     function updateButton(visitedHere) {
