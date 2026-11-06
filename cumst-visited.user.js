@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         CumstVisited
 // @namespace    https://github.com/xerance/qol-site-scripts
-// @version      1.2.0
-// @description  cum.st (OnlyHaven): fade posts, DMs and creators you've already opened and show a "last viewed" timestamp on each, so unseen ones pop out of the grid. A floating button (or Alt+V) hides visited cards entirely.
+// @version      1.3.0
+// @description  cum.st (OnlyHaven): fade posts, DMs and creators you've already opened and show a "last viewed" timestamp on each, so unseen ones pop out of the grid. A button in the site's toolbar (or Alt+V) hides visited cards entirely.
 // @author       xerance
 // @match        *://cum.st/*
 // @match        *://*.cum.st/*
@@ -27,7 +27,8 @@
     const BADGE_FG       = '#ffffff';
     const TRACK_CREATORS = true; // set false to track only posts/DMs, not creator profiles
     const HIDE_KEY       = 'v';  // Alt + this key hides/shows visited cards ('' disables it)
-    const SHOW_BUTTON    = true; // the floating hide/show button (the shortcut works either way)
+    const SHOW_BUTTON    = true; // the hide/show button (the shortcut works either way)
+    const BUTTON_IN_BAR  = true; // sit in the site's own toolbar; false = floating corner pill
     const STORAGE_KEY    = 'cumst-visited';
     const HIDE_STATE_KEY = 'cumst-visited-hide'; // remembers the hide toggle between pages
 
@@ -228,16 +229,27 @@
     }
 
     /*───────────────────────────────────────────────────────────────────────╗
-    │  The floating button. It's parked in the bottom-right corner rather     │
-    │  than wedged into the site's own toolbar, which is a Svelte component   │
-    │  that re-renders (and would throw the button away) on every page and    │
-    │  filter change.                                                         │
+    │  The button. It sits in the site's own toolbar, next to Filters, and    │
+    │  is re-homed whenever Svelte rebuilds that toolbar underneath it (which │
+    │  happens on every page and filter change). It borrows the site's theme  │
+    │  tokens, so it matches in both light and dark.                          │
     │                                                                          │
     │  Its label says what a click will DO, and carries the number of visited │
     │  cards on the page. With nothing visited here and nothing hidden, there │
     │  is nothing to toggle, so it stays out of the way.                      │
     ╚───────────────────────────────────────────────────────────────────────*/
-    let btn = null;
+    let btn = null, btnText = null;
+
+    // The site's own sticky toolbar: `div.sticky.top-0` wrapping a `flex gap-2`
+    // row that holds the search box and the Filters button. It's the same on
+    // /posts, /creators, /dms and a creator's own page. Requiring the input
+    // keeps us from landing in some other sticky bar.
+    function toolbarSlot() {
+        if (!BUTTON_IN_BAR) return null;
+        const bar = document.querySelector('div.sticky.top-0');
+        const row = bar && bar.querySelector('div.flex.gap-2');
+        return row && row.querySelector('input') ? row : null;
+    }
 
     function updateButton(visitedHere) {
         if (!SHOW_BUTTON || !document.body) return;
@@ -245,13 +257,27 @@
             btn = document.createElement('button');
             btn.type = 'button';
             btn.className = 'cumst-toggle';
+            const eye = document.createElement('span');
+            eye.className = 'cumst-toggle-eye';
+            eye.textContent = '\u{1F441}';
+            btnText = document.createElement('span');
+            btnText.className = 'cumst-toggle-text';
+            btn.append(eye, btnText);
             btn.addEventListener('click', e => {
                 e.preventDefault();
                 e.stopPropagation();
                 toggleHide(false);
             });
-            document.body.appendChild(btn);
         }
+
+        // Svelte rebuilds the toolbar on every page and filter change, which
+        // throws the button out with it — so re-home it whenever it's adrift.
+        // Without a toolbar (an unexpected layout) it falls back to a floating
+        // corner pill rather than disappearing.
+        const slot = toolbarSlot();
+        const parent = slot || document.body;
+        if (btn.parentElement !== parent) parent.appendChild(btn);
+        btn.classList.toggle('cumst-toggle-float', !slot);
 
         const useful = hideVisited || visitedHere > 0;
         if (btn.hidden !== !useful) btn.hidden = !useful;
@@ -261,7 +287,7 @@
                       (visitedHere ? ' (' + visitedHere + ')' : '');
         // Same idempotence rule as the badges: only write on a real change,
         // or every paint wakes the observer that triggered it.
-        if (btn.textContent !== label) btn.textContent = label;
+        if (btnText.textContent !== label) btnText.textContent = label;
         const pressed = hideVisited ? 'true' : 'false';
         if (btn.getAttribute('aria-pressed') !== pressed) btn.setAttribute('aria-pressed', pressed);
         btn.classList.toggle('cumst-toggle-on', hideVisited);
@@ -336,43 +362,81 @@
 
             /* The floating hide/show button. Pinned bottom-right, above the
                toast, and above the site's own overlays. */
+            /* Built out of the site's own theme tokens (--input, --foreground,
+               --radius, --primary) so it matches the Filters button it sits
+               next to, in light and dark alike. The fallbacks are the dark
+               values, used only if the site ever drops a token. */
             .cumst-toggle {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                align-self: stretch;
+                flex: none;
+                margin: 0;
+                padding: 0 10px;
+                border: 1px solid var(--input, rgba(255, 255, 255, .15));
+                border-radius: var(--radius, 10px);
+                background: var(--background, #fff);
+                color: var(--foreground, #fff);
+                font-family: inherit;
+                font-size: 14px;
+                font-weight: 500;
+                line-height: 20px;
+                white-space: nowrap;
+                cursor: pointer;
+                transition: background .15s ease, border-color .15s ease;
+            }
+            .cumst-toggle-eye { font-size: 13px; line-height: 1; }
+            .cumst-toggle:hover { background: color-mix(in oklab, var(--foreground, #000) 8%, var(--background, #fff)); }
+            /* In dark mode the site's buttons aren't the page background —
+               they're a 4.5% white wash over it, so match that instead. */
+            html.dark .cumst-toggle { background: color-mix(in oklab, #fff 4.5%, transparent); }
+            html.dark .cumst-toggle:hover { background: color-mix(in oklab, #fff 10%, transparent); }
+            /* Pressed state: the site's accent, so "hiding is on" reads at a
+               glance. Restated under html.dark so it isn't out-specified by
+               the dark background rules above. */
+            .cumst-toggle-on,
+            html.dark .cumst-toggle-on {
+                background: var(--primary, ${BADGE_BG});
+                border-color: var(--primary, ${BADGE_BG});
+                color: #fff;
+            }
+            .cumst-toggle-on:hover,
+            html.dark .cumst-toggle-on:hover {
+                background: var(--primary, ${BADGE_BG});
+                filter: brightness(1.12);
+            }
+            /* Narrow screens: the toolbar row is tight, so keep just the eye. */
+            @media (max-width: 560px) { .cumst-toggle-text { display: none; } }
+
+            /* Fallback when no toolbar is found: a floating corner pill. */
+            .cumst-toggle-float {
                 position: fixed;
                 right: 16px;
                 bottom: 16px;
                 z-index: 2147483646;
-                display: inline-flex;
-                align-items: center;
-                gap: 6px;
-                margin: 0;
+                align-self: auto;
                 padding: 8px 12px;
-                border: 1px solid rgba(255, 255, 255, .18);
                 border-radius: 999px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, .45);
+                backdrop-filter: blur(6px);
+            }
+            /* The dark-mode rule above is more specific than a lone
+               .cumst-toggle-float, so the overlay restates it to win on order. */
+            .cumst-toggle-float,
+            html.dark .cumst-toggle-float {
                 background: rgba(20, 20, 24, .82);
                 color: #fff;
-                font: 600 12px/1 system-ui, sans-serif;
-                cursor: pointer;
-                backdrop-filter: blur(6px);
-                box-shadow: 0 2px 10px rgba(0, 0, 0, .45);
-                transition: background .15s ease, border-color .15s ease, transform .1s ease;
             }
-            .cumst-toggle::before { content: '\\1F441 '; font-size: 13px; line-height: 1; }
-            .cumst-toggle:hover { background: rgba(32, 32, 38, .92); border-color: rgba(255, 255, 255, .3); }
-            .cumst-toggle:active { transform: translateY(1px); }
-            /* Pressed state: the site's accent, so "hiding is on" reads at a glance. */
-            .cumst-toggle-on {
-                background: ${BADGE_BG};
-                border-color: ${BADGE_BG};
-                color: ${BADGE_FG};
-            }
-            .cumst-toggle-on:hover { background: ${BADGE_BG}; filter: brightness(1.1); }
+            .cumst-toggle-float.cumst-toggle-on { background: var(--primary, ${BADGE_BG}); }
             /* display:inline-flex would otherwise beat the hidden attribute. */
             .cumst-toggle[hidden] { display: none !important; }
 
+            /* Only ever shown when the button isn't, so the two can't collide. */
             .cumst-toast {
                 position: fixed;
                 right: 16px;
-                bottom: 64px;
+                bottom: 16px;
                 z-index: 2147483647;
                 padding: 8px 12px;
                 border-radius: 6px;

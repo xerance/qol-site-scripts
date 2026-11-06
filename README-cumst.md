@@ -13,9 +13,11 @@ listings, in the spirit of NiyaVisited and F95Visited.
 - **"Last viewed" timestamp** on every visited card (`👁 3h`), in the top-right corner — the
   site's own OnlyFans/Fansly badge sits at the top-left. Hover it for the full date.
 - **A "Hide visited" button hides them entirely**, leaving only what you haven't opened. It
-  sits in the bottom-right corner, its label says what a click will do and how many visited
-  cards are on the page (`👁 Hide visited (12)`), and it turns the site's accent blue while
-  hiding is on. It stays out of the way when there's nothing visited to hide.
+  sits in the site's own toolbar, right next to **Filters**, built from the site's theme
+  tokens so it matches that button in both light and dark. Its label says what a click will
+  do and how many visited cards are on the page (`👁 Hide visited (12)`), it turns the site's
+  accent blue while hiding is on, and it stays out of the way when there's nothing visited to
+  hide. On narrow screens it shrinks to just the eye.
 - **`Alt`+`V` does the same from the keyboard** (ignored while you're typing in the search
   box). Either way the setting is remembered across pages and tabs.
 
@@ -48,6 +50,9 @@ and tag pages.
   repaints without a reload.
 - The site is a Svelte app that re-renders the grid on paging and filtering, so a debounced
   `MutationObserver` repaints the marks, and a 1s interval keeps the relative times fresh.
+  That re-render also rebuilds the toolbar and throws the button out with it, so the button is
+  re-homed whenever it's found adrift. If the toolbar ever isn't there, it falls back to a
+  floating pill in the bottom-right corner rather than disappearing.
 
 ## Settings
 
@@ -60,7 +65,8 @@ At the top of the script:
 | `ROW_OPACITY` / `ROW_HOVER` | `0.5` / `0.9` | fade for visited creator rows |
 | `BADGE_BG` / `BADGE_FG` | the site's accent blue / white | the timestamp pill's colours |
 | `TRACK_CREATORS` | `true` | set `false` to track only posts and DMs |
-| `SHOW_BUTTON` | `true` | set `false` to drop the floating button and use only the shortcut |
+| `SHOW_BUTTON` | `true` | set `false` to drop the button and use only the shortcut |
+| `BUTTON_IN_BAR` | `true` | set `false` to float the button in the bottom-right corner instead of putting it in the site's toolbar |
 | `HIDE_KEY` | `'v'` | the key `Alt` is held with to hide/show visited cards; `''` disables the shortcut |
 
 ## Install
