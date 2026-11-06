@@ -29,6 +29,13 @@ ones pop, shows a "last viewed" timestamp, and flags games with an **⬆ UPDATE*
 their version is newer than the one you last saw.
 → details in [README-f95.md](README-f95.md)
 
+### CumstVisited — `cumst-visited.user.js`
+For **cum.st** (OnlyHaven). **Fades posts, DMs and creators you've opened** so unseen ones pop
+out of the grid, and shows a "last viewed" timestamp on each card. Posts and DMs are keyed by
+their own ids, so they stay marked wherever they turn up (global feed, creator page, tags,
+search).
+→ details in [README-cumst.md](README-cumst.md)
+
 ### CumstNoPopunders — `cumst-no-popunders.user.js`
 For **cum.st** (OnlyHaven). Stops the ExoClick "popMagic" popunder that opens an ad window
 when you click a gallery card. It blocks the ad loader script, only lets `window.open` open
