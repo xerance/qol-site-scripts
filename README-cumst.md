@@ -12,10 +12,12 @@ listings, in the spirit of NiyaVisited and F95Visited.
   header image, so they're faded with opacity rather than a filter).
 - **"Last viewed" timestamp** on every visited card (`👁 3h`), in the top-right corner — the
   site's own OnlyFans/Fansly badge sits at the top-left. Hover it for the full date.
-- **`Alt`+`V` hides visited cards entirely**, leaving only what you haven't opened — press it
-  again to bring them back. A small toast confirms which way it went, the setting is
-  remembered across pages and tabs, and the shortcut is ignored while you're typing in the
-  search box.
+- **A "Hide visited" button hides them entirely**, leaving only what you haven't opened. It
+  sits in the bottom-right corner, its label says what a click will do and how many visited
+  cards are on the page (`👁 Hide visited (12)`), and it turns the site's accent blue while
+  hiding is on. It stays out of the way when there's nothing visited to hide.
+- **`Alt`+`V` does the same from the keyboard** (ignored while you're typing in the search
+  box). Either way the setting is remembered across pages and tabs.
 
 Works on every listing that shows these cards: `/posts`, `/posts/popular`, `/posts/tags`,
 `/dms`, `/dms/popular`, `/creators`, `/creators/recent`, a creator's own page, search results
@@ -58,6 +60,7 @@ At the top of the script:
 | `ROW_OPACITY` / `ROW_HOVER` | `0.5` / `0.9` | fade for visited creator rows |
 | `BADGE_BG` / `BADGE_FG` | the site's accent blue / white | the timestamp pill's colours |
 | `TRACK_CREATORS` | `true` | set `false` to track only posts and DMs |
+| `SHOW_BUTTON` | `true` | set `false` to drop the floating button and use only the shortcut |
 | `HIDE_KEY` | `'v'` | the key `Alt` is held with to hide/show visited cards; `''` disables the shortcut |
 
 ## Install

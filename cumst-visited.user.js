@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         CumstVisited
 // @namespace    https://github.com/xerance/qol-site-scripts
-// @version      1.1.0
-// @description  cum.st (OnlyHaven): fade posts, DMs and creators you've already opened and show a "last viewed" timestamp on each, so unseen ones pop out of the grid. Alt+V hides visited cards entirely.
+// @version      1.2.0
+// @description  cum.st (OnlyHaven): fade posts, DMs and creators you've already opened and show a "last viewed" timestamp on each, so unseen ones pop out of the grid. A floating button (or Alt+V) hides visited cards entirely.
 // @author       xerance
 // @match        *://cum.st/*
 // @match        *://*.cum.st/*
@@ -27,6 +27,7 @@
     const BADGE_FG       = '#ffffff';
     const TRACK_CREATORS = true; // set false to track only posts/DMs, not creator profiles
     const HIDE_KEY       = 'v';  // Alt + this key hides/shows visited cards ('' disables it)
+    const SHOW_BUTTON    = true; // the floating hide/show button (the shortcut works either way)
     const STORAGE_KEY    = 'cumst-visited';
     const HIDE_STATE_KEY = 'cumst-visited-hide'; // remembers the hide toggle between pages
 
@@ -136,6 +137,7 @@
     const CARD_SEL = 'a.cv-cell[href], a.cv-row[href], a[href*="/post/"], a[href*="/dm/"]';
 
     function paint() {
+        let visitedHere = 0;
         document.querySelectorAll(CARD_SEL).forEach(a => {
             const key = keyFromHref(a.getAttribute('href'));
             // Only mark real cards: a bare text link (a creator name inside a
@@ -148,6 +150,7 @@
             const ts = store[key];
             if (!ts) { clear(a); return; }
 
+            visitedHere++;
             a.classList.add('cumst-visited');
             a.classList.toggle('cumst-visited-row', a.classList.contains('cv-row'));
 
@@ -164,6 +167,7 @@
             const title = 'Last viewed ' + fullTime(ts);
             if (badge.title !== title) badge.title = title;
         });
+        updateButton(visitedHere);
     }
 
     function clear(a) {
@@ -211,11 +215,59 @@
         document.documentElement.classList.toggle('cumst-hide-visited', hideVisited);
     }
 
-    function toggleHide() {
+    function toggleHide(fromKeyboard) {
         hideVisited = !hideVisited;
         write(HIDE_STATE_KEY, hideVisited);
         applyHide();
-        toast(hideVisited ? 'Visited hidden' : 'Visited shown');
+        paint(); // refresh the button's label and count
+        // The button shows the new state itself, so only the shortcut needs a
+        // toast — and only when the button isn't there to answer for it.
+        if (fromKeyboard && (!btn || btn.hidden)) {
+            toast(hideVisited ? 'Visited hidden' : 'Visited shown');
+        }
+    }
+
+    /*───────────────────────────────────────────────────────────────────────╗
+    │  The floating button. It's parked in the bottom-right corner rather     │
+    │  than wedged into the site's own toolbar, which is a Svelte component   │
+    │  that re-renders (and would throw the button away) on every page and    │
+    │  filter change.                                                         │
+    │                                                                          │
+    │  Its label says what a click will DO, and carries the number of visited │
+    │  cards on the page. With nothing visited here and nothing hidden, there │
+    │  is nothing to toggle, so it stays out of the way.                      │
+    ╚───────────────────────────────────────────────────────────────────────*/
+    let btn = null;
+
+    function updateButton(visitedHere) {
+        if (!SHOW_BUTTON || !document.body) return;
+        if (!btn) {
+            btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'cumst-toggle';
+            btn.addEventListener('click', e => {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleHide(false);
+            });
+            document.body.appendChild(btn);
+        }
+
+        const useful = hideVisited || visitedHere > 0;
+        if (btn.hidden !== !useful) btn.hidden = !useful;
+        if (!useful) return;
+
+        const label = (hideVisited ? 'Show visited' : 'Hide visited') +
+                      (visitedHere ? ' (' + visitedHere + ')' : '');
+        // Same idempotence rule as the badges: only write on a real change,
+        // or every paint wakes the observer that triggered it.
+        if (btn.textContent !== label) btn.textContent = label;
+        const pressed = hideVisited ? 'true' : 'false';
+        if (btn.getAttribute('aria-pressed') !== pressed) btn.setAttribute('aria-pressed', pressed);
+        btn.classList.toggle('cumst-toggle-on', hideVisited);
+        const tip = (hideVisited ? 'Show the cards you\'ve already opened' : 'Hide the cards you\'ve already opened') +
+                    (HIDE_KEY ? ' (Alt+' + HIDE_KEY.toUpperCase() + ')' : '');
+        if (btn.title !== tip) btn.title = tip;
     }
 
     // Brief confirmation, so the shortcut isn't a silent no-op when a listing
@@ -240,7 +292,7 @@
         const t = e.target;
         if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
         e.preventDefault();
-        toggleHide();
+        toggleHide(true);
     }
 
     /*───────────────────────────────────────────────────────────────────────╗
@@ -282,10 +334,45 @@
                and the row list both reflow on their own. */
             html.cumst-hide-visited a.cumst-visited { display: none !important; }
 
-            .cumst-toast {
+            /* The floating hide/show button. Pinned bottom-right, above the
+               toast, and above the site's own overlays. */
+            .cumst-toggle {
                 position: fixed;
                 right: 16px;
                 bottom: 16px;
+                z-index: 2147483646;
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                margin: 0;
+                padding: 8px 12px;
+                border: 1px solid rgba(255, 255, 255, .18);
+                border-radius: 999px;
+                background: rgba(20, 20, 24, .82);
+                color: #fff;
+                font: 600 12px/1 system-ui, sans-serif;
+                cursor: pointer;
+                backdrop-filter: blur(6px);
+                box-shadow: 0 2px 10px rgba(0, 0, 0, .45);
+                transition: background .15s ease, border-color .15s ease, transform .1s ease;
+            }
+            .cumst-toggle::before { content: '\\1F441 '; font-size: 13px; line-height: 1; }
+            .cumst-toggle:hover { background: rgba(32, 32, 38, .92); border-color: rgba(255, 255, 255, .3); }
+            .cumst-toggle:active { transform: translateY(1px); }
+            /* Pressed state: the site's accent, so "hiding is on" reads at a glance. */
+            .cumst-toggle-on {
+                background: ${BADGE_BG};
+                border-color: ${BADGE_BG};
+                color: ${BADGE_FG};
+            }
+            .cumst-toggle-on:hover { background: ${BADGE_BG}; filter: brightness(1.1); }
+            /* display:inline-flex would otherwise beat the hidden attribute. */
+            .cumst-toggle[hidden] { display: none !important; }
+
+            .cumst-toast {
+                position: fixed;
+                right: 16px;
+                bottom: 64px;
                 z-index: 2147483647;
                 padding: 8px 12px;
                 border-radius: 6px;
