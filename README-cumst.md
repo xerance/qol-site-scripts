@@ -12,6 +12,10 @@ listings, in the spirit of NiyaVisited and F95Visited.
   header image, so they're faded with opacity rather than a filter).
 - **"Last viewed" timestamp** on every visited card (`👁 3h`), in the top-right corner — the
   site's own OnlyFans/Fansly badge sits at the top-left. Hover it for the full date.
+- **`Alt`+`V` hides visited cards entirely**, leaving only what you haven't opened — press it
+  again to bring them back. A small toast confirms which way it went, the setting is
+  remembered across pages and tabs, and the shortcut is ignored while you're typing in the
+  search box.
 
 Works on every listing that shows these cards: `/posts`, `/posts/popular`, `/posts/tags`,
 `/dms`, `/dms/popular`, `/creators`, `/creators/recent`, a creator's own page, search results
@@ -36,7 +40,8 @@ and tag pages.
 - Data lives in your **userscript manager's** storage (`GM_setValue`) under `cumst-visited`, as
   a `{ "kind:platform:id": timestamp }` map — so it survives the site clearing its own storage
   and is shared across `cum.st` subdomains. Without the GM grants it falls back to the site's
-  `localStorage` under the same key.
+  `localStorage` under the same key. The hide toggle is a second, separate value,
+  `cumst-visited-hide`.
 - Tabs stay in sync: a post opened in a second tab records there, and the listing behind it
   repaints without a reload.
 - The site is a Svelte app that re-renders the grid on paging and filtering, so a debounced
@@ -53,6 +58,7 @@ At the top of the script:
 | `ROW_OPACITY` / `ROW_HOVER` | `0.5` / `0.9` | fade for visited creator rows |
 | `BADGE_BG` / `BADGE_FG` | the site's accent blue / white | the timestamp pill's colours |
 | `TRACK_CREATORS` | `true` | set `false` to track only posts and DMs |
+| `HIDE_KEY` | `'v'` | the key `Alt` is held with to hide/show visited cards; `''` disables the shortcut |
 
 ## Install
 

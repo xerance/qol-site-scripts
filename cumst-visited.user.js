@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         CumstVisited
 // @namespace    https://github.com/xerance/qol-site-scripts
-// @version      1.0.0
-// @description  cum.st (OnlyHaven): fade posts, DMs and creators you've already opened and show a "last viewed" timestamp on each, so unseen ones pop out of the grid.
+// @version      1.1.0
+// @description  cum.st (OnlyHaven): fade posts, DMs and creators you've already opened and show a "last viewed" timestamp on each, so unseen ones pop out of the grid. Alt+V hides visited cards entirely.
 // @author       xerance
 // @match        *://cum.st/*
 // @match        *://*.cum.st/*
@@ -26,7 +26,9 @@
     const BADGE_BG       = 'rgba(1, 173, 238, 0.9)'; // the site's own accent blue
     const BADGE_FG       = '#ffffff';
     const TRACK_CREATORS = true; // set false to track only posts/DMs, not creator profiles
+    const HIDE_KEY       = 'v';  // Alt + this key hides/shows visited cards ('' disables it)
     const STORAGE_KEY    = 'cumst-visited';
+    const HIDE_STATE_KEY = 'cumst-visited-hide'; // remembers the hide toggle between pages
 
     /*───────────────────────────────────────────────────────────────────────╗
     │  Storage — a { "kind:platform:id": lastVisitedTimestamp } map.           │
@@ -38,24 +40,31 @@
     ╚───────────────────────────────────────────────────────────────────────*/
     const hasGM = typeof GM_getValue === 'function' && typeof GM_setValue === 'function';
 
-    function loadStore() {
+    function read(key, fallback) {
         try {
-            if (hasGM) return GM_getValue(STORAGE_KEY, {}) || {};
-            return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+            if (hasGM) {
+                const v = GM_getValue(key, fallback);
+                return v === undefined || v === null ? fallback : v;
+            }
+            const raw = localStorage.getItem(key);
+            return raw === null ? fallback : JSON.parse(raw);
         } catch (e) {
-            console.warn('CumstVisited: could not read storage, starting fresh.', e);
-            return {};
+            console.warn('CumstVisited: could not read storage, using the default.', e);
+            return fallback;
         }
     }
 
-    function writeStore(s) {
+    function write(key, value) {
         try {
-            if (hasGM) GM_setValue(STORAGE_KEY, s);
-            else localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
+            if (hasGM) GM_setValue(key, value);
+            else localStorage.setItem(key, JSON.stringify(value));
         } catch (e) {
             console.warn('CumstVisited: could not write storage.', e);
         }
     }
+
+    const loadStore = () => read(STORAGE_KEY, {}) || {};
+    const writeStore = s => write(STORAGE_KEY, s);
 
     let store = loadStore();
 
@@ -189,6 +198,52 @@
     }
 
     /*───────────────────────────────────────────────────────────────────────╗
+    │  "Hide visited" toggle — Alt+V collapses every visited card out of the  │
+    │  listing, leaving only what you haven't opened. The state is remembered │
+    │  (and shared across tabs), so it survives paging and navigation.        │
+    │                                                                          │
+    │  It's a plain CSS class on <html>, so hiding and showing costs nothing  │
+    │  and doesn't need a repaint.                                            │
+    ╚───────────────────────────────────────────────────────────────────────*/
+    let hideVisited = read(HIDE_STATE_KEY, false) === true;
+
+    function applyHide() {
+        document.documentElement.classList.toggle('cumst-hide-visited', hideVisited);
+    }
+
+    function toggleHide() {
+        hideVisited = !hideVisited;
+        write(HIDE_STATE_KEY, hideVisited);
+        applyHide();
+        toast(hideVisited ? 'Visited hidden' : 'Visited shown');
+    }
+
+    // Brief confirmation, so the shortcut isn't a silent no-op when a listing
+    // happens to have nothing visited in it.
+    let toastEl = null, toastTimer = null;
+    function toast(text) {
+        if (!toastEl) {
+            toastEl = document.createElement('div');
+            toastEl.className = 'cumst-toast';
+            document.body.appendChild(toastEl);
+        }
+        toastEl.textContent = text;
+        toastEl.classList.add('cumst-toast-on');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toastEl.classList.remove('cumst-toast-on'), 1400);
+    }
+
+    function onKeyDown(e) {
+        if (!HIDE_KEY || !e.altKey || e.ctrlKey || e.metaKey) return;
+        if (e.key.toLowerCase() !== HIDE_KEY.toLowerCase()) return;
+        // Don't steal the key while you're typing in the search box.
+        const t = e.target;
+        if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
+        e.preventDefault();
+        toggleHide();
+    }
+
+    /*───────────────────────────────────────────────────────────────────────╗
     │  Styles                                                                  │
     ╚───────────────────────────────────────────────────────────────────────*/
     function injectStyles() {
@@ -222,6 +277,28 @@
                 pointer-events: none;
                 box-shadow: 0 1px 4px rgba(0, 0, 0, .5);
             }
+
+            /* Alt+V: drop visited cards out of the listing entirely. The grid
+               and the row list both reflow on their own. */
+            html.cumst-hide-visited a.cumst-visited { display: none !important; }
+
+            .cumst-toast {
+                position: fixed;
+                right: 16px;
+                bottom: 16px;
+                z-index: 2147483647;
+                padding: 8px 12px;
+                border-radius: 6px;
+                background: ${BADGE_BG};
+                color: ${BADGE_FG};
+                font: 600 12px/1 system-ui, sans-serif;
+                pointer-events: none;
+                opacity: 0;
+                transform: translateY(6px);
+                transition: opacity .15s ease, transform .15s ease;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, .5);
+            }
+            .cumst-toast-on { opacity: 1; transform: translateY(0); }
         `;
         document.head.appendChild(style);
     }
@@ -235,9 +312,14 @@
             store = newValue || {};
             paint();
         });
+        GM_addValueChangeListener(HIDE_STATE_KEY, (name, oldValue, newValue) => {
+            hideVisited = newValue === true;
+            applyHide();
+        });
     }
     window.addEventListener('storage', e => {
         if (e.key === STORAGE_KEY) { store = loadStore(); paint(); }
+        if (e.key === HIDE_STATE_KEY) { hideVisited = read(HIDE_STATE_KEY, false) === true; applyHide(); }
     });
 
     /*───────────────────────────────────────────────────────────────────────╗
@@ -249,8 +331,10 @@
     │  interval catches navigations and refreshes the relative times.          │
     ╚───────────────────────────────────────────────────────────────────────*/
     injectStyles();
+    applyHide();
     document.addEventListener('click', onCardClick, true);
     document.addEventListener('auxclick', onCardClick, true);
+    document.addEventListener('keydown', onKeyDown, true);
 
     let pending = null;
     new MutationObserver(() => {

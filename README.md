@@ -33,7 +33,7 @@ their version is newer than the one you last saw.
 For **cum.st** (OnlyHaven). **Fades posts, DMs and creators you've opened** so unseen ones pop
 out of the grid, and shows a "last viewed" timestamp on each card. Posts and DMs are keyed by
 their own ids, so they stay marked wherever they turn up (global feed, creator page, tags,
-search).
+search). **`Alt`+`V`** hides visited cards entirely, leaving only what you haven't opened.
 → details in [README-cumst.md](README-cumst.md)
 
 ### CumstNoPopunders — `cumst-no-popunders.user.js`
