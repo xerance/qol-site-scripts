@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         PawchiveVisited
 // @namespace    https://github.com/xerance/qol-site-scripts
-// @version      1.0.0
+// @version      1.0.1
 // @description  pawchive.pw: fade posts and creators you've already opened and show a "last viewed" timestamp on each, so unseen ones pop out of the grid. A button above the listing (or Alt+V) hides visited cards entirely.
 // @author       xerance
 // @match        *://pawchive.pw/*
@@ -363,8 +363,15 @@
     /*───────────────────────────────────────────────────────────────────────╗
     │  Styles                                                                  │
     ╚───────────────────────────────────────────────────────────────────────*/
+    let styleEl = null;
     function injectStyles() {
         const style = document.createElement('style');
+        styleEl = style;
+        // The site sweeps every <style>/<script> in <head> that isn't marked
+        // `data-keep` whenever it swaps a page in (hx-boost / htmx:beforeSwap),
+        // which would take our styles with it. Carry the same marker — and the
+        // interval below puts the element back if it ever goes missing anyway.
+        style.setAttribute('data-keep', '');
         style.textContent = `
             /* Post cards: dim + desaturate the thumbnail, eased back on hover.
                The filter sits on the <img> so the title bar and footer stay
@@ -521,6 +528,8 @@
     let lastPath = location.pathname;
     setInterval(() => {
         if (location.pathname !== lastPath) { lastPath = location.pathname; recordVisit(); }
+        // Put the stylesheet back if the site's head sweep took it anyway.
+        if (styleEl && !styleEl.isConnected) document.head.appendChild(styleEl);
         store = loadStore();
         paint();
     }, 1000);

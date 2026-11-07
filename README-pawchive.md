@@ -89,9 +89,9 @@ At the top of the script:
 3. Open `/posts` and click around — cards you've opened come back faded with a timestamp.
 
 Note that pawchive runs a popunder ad script, so a click on a card can open an ad window.
-The script ignores the synthetic clicks that script makes, but it doesn't block the ads
-themselves — an ad blocker, or something like **CumstNoPopunders** adapted to this site,
-handles that side.
+This script ignores the synthetic clicks that ad script makes, so they can't record a visit
+or flip the toggle, but it doesn't block the ads themselves. **PawchiveNoPopunders**, in
+this same repo, does — the two are meant to be installed together.
 
 ## Clearing history
 

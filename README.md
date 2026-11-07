@@ -46,6 +46,15 @@ search). A **"Hide visited" button** above the listing (or `Alt`+`V`) hides them
 leaving only what you haven't opened.
 → details in [README-pawchive.md](README-pawchive.md)
 
+### PawchiveNoPopunders — `pawchive-no-popunders.user.js`
+For **pawchive.pw**. Stops the popunder ad window that opens when you click a card. The page
+injects its ad loader itself and runs a fallback engine from the script's `onerror`, so
+blocking the request alone doesn't help — this drops the script element *before* it's
+inserted, so neither handler ever fires, and gates `window.open`, `anchor.click()` and
+`form.submit()` to same-site URLs as a backstop that doesn't care what the ad domain is
+called this week. Your own clicks are left alone, so the site's in-page navigation still
+works; a heavier click shield is there behind a setting if an ad ever gets through.
+
 ### CumstNoPopunders — `cumst-no-popunders.user.js`
 For **cum.st** (OnlyHaven). Stops the ExoClick "popMagic" popunder that opens an ad window
 when you click a gallery card. It blocks the ad loader script, only lets `window.open` open
