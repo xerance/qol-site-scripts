@@ -38,6 +38,14 @@ search). A **"Hide visited" button** in the site's own toolbar (or `Alt`+`V`) hi
 entirely, leaving only what you haven't opened.
 → details in [README-cumst.md](README-cumst.md)
 
+### PawchiveVisited — `pawchive-visited.user.js`
+For **pawchive.pw**. **Fades posts and creators you've opened** so unseen ones pop out of
+the grid, and shows a "last viewed" timestamp on each card. Posts are keyed by their own
+service id, so they stay marked wherever they turn up (global feed, a creator's page, tags,
+search). A **"Hide visited" button** above the listing (or `Alt`+`V`) hides them entirely,
+leaving only what you haven't opened.
+→ details in [README-pawchive.md](README-pawchive.md)
+
 ### CumstNoPopunders — `cumst-no-popunders.user.js`
 For **cum.st** (OnlyHaven). Stops the ExoClick "popMagic" popunder that opens an ad window
 when you click a gallery card. It blocks the ad loader script, only lets `window.open` open
