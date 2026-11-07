@@ -9,6 +9,8 @@
 // @license      MIT
 // @run-at       document-start
 // @grant        none
+// @downloadURL https://raw.githubusercontent.com/xerance/qol-site-scripts/master/cumst-no-popunders.user.js
+// @updateURL   https://raw.githubusercontent.com/xerance/qol-site-scripts/master/cumst-no-popunders.user.js
 // ==/UserScript==
 
 (function () {

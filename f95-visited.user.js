@@ -9,6 +9,8 @@
 // @run-at       document-idle
 // @grant        none
 // @license      MIT
+// @downloadURL https://raw.githubusercontent.com/xerance/qol-site-scripts/master/f95-visited.user.js
+// @updateURL   https://raw.githubusercontent.com/xerance/qol-site-scripts/master/f95-visited.user.js
 // ==/UserScript==
 
 (function () {

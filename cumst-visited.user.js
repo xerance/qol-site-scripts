@@ -11,6 +11,8 @@
 // @grant        GM_setValue
 // @grant        GM_addValueChangeListener
 // @license      MIT
+// @downloadURL https://raw.githubusercontent.com/xerance/qol-site-scripts/master/cumst-visited.user.js
+// @updateURL   https://raw.githubusercontent.com/xerance/qol-site-scripts/master/cumst-visited.user.js
 // ==/UserScript==
 
 (function () {

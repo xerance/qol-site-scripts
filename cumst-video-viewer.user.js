@@ -9,6 +9,8 @@
 // @run-at       document-start
 // @grant        none
 // @license      MIT
+// @downloadURL https://raw.githubusercontent.com/xerance/qol-site-scripts/master/cumst-video-viewer.user.js
+// @updateURL   https://raw.githubusercontent.com/xerance/qol-site-scripts/master/cumst-video-viewer.user.js
 // ==/UserScript==
 
 (function () {
