@@ -1,8 +1,9 @@
 # qol-site-scripts
 
 A small collection of quality-of-life userscripts for a few sites — tracking **what you've
-already seen** (visited items, timestamps, update flags, a personal tag system) and getting
-rid of annoyances like popunder ads.
+already seen** (visited items, timestamps, update flags, a personal tag system), cutting
+long lists down to **what you actually want**, and getting rid of annoyances like popunder
+ads.
 
 All are plain userscripts for **Violentmonkey / Tampermonkey**. They store everything
 client-side (your userscript manager / the site's `localStorage`) and need no account or
@@ -51,6 +52,14 @@ fullscreen**, and the viewer **only closes with its X button**: clicks on the da
 around the player and the Escape key no longer close it (Escape still leaves fullscreen).
 A single click still plays/pauses. On desktop, double-clicking the left/right side no longer
 seeks ±10s; double-tap seeking on touch screens is unchanged.
+
+### SubtitleCatLangFilter — `subtitlecat-lang-filter.user.js`
+For **subtitlecat.com** subtitle pages. Adds a **floating "🌐 Languages" button in the
+bottom-right corner** that opens a filter panel: tick the languages you want and the ~150-row
+grid shows only those, or flip **"only languages with a subtitle"** to hide every row that
+still needs translating. Your picks are remembered across pages and visits, and the button
+shows how many of the languages are still on screen.
+→ details in [README-subtitlecat.md](README-subtitlecat.md)
 
 ## Install
 
