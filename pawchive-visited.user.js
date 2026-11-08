@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         PawchiveVisited
 // @namespace    https://github.com/xerance/qol-site-scripts
-// @version      1.0.1
+// @version      1.0.2
 // @description  pawchive.pw: fade posts and creators you've already opened and show a "last viewed" timestamp on each, so unseen ones pop out of the grid. A button above the listing (or Alt+V) hides visited cards entirely.
 // @author       xerance
 // @match        *://pawchive.pw/*
@@ -278,6 +278,16 @@
 
     function updateButton(visitedHere) {
         if (!SHOW_BUTTON || !document.body) return;
+
+        // Going Back restores a cached copy of the page's HTML — and our bar
+        // was in it when the snapshot was taken, so the restored markup
+        // contains a *dead* copy of the button: right shape, no listeners,
+        // sitting above the live one. It's the one you'd click. Drop any copy
+        // that isn't ours before going further.
+        for (const stray of document.querySelectorAll('.pawv-bar, .pawv-toggle')) {
+            if (stray !== bar && stray !== btn) stray.remove();
+        }
+
         if (!btn) {
             btn = document.createElement('button');
             btn.type = 'button';
