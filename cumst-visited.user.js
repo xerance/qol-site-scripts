@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         CumstVisited
 // @namespace    https://github.com/xerance/qol-site-scripts
-// @version      1.3.1
+// @version      1.3.2
 // @description  cum.st (OnlyHaven): fade posts, DMs and creators you've already opened and show a "last viewed" timestamp on each, so unseen ones pop out of the grid. A button in the site's toolbar (or Alt+V) hides visited cards entirely.
 // @author       xerance
 // @match        *://cum.st/*
@@ -27,6 +27,9 @@
     const ROW_HOVER      = 0.9;
     const BADGE_BG       = 'rgba(1, 173, 238, 0.9)'; // the site's own accent blue
     const BADGE_FG       = '#ffffff';
+    const BADGE_PUSH     = '23px'; // how far the site's own top-right badges (video
+                                   // duration, quality) slide down on a visited card:
+                                   // the badge's 17px height plus a 6px gap
     const TRACK_CREATORS = true; // set false to track only posts/DMs, not creator profiles
     const HIDE_KEY       = 'v';  // Alt + this key hides/shows visited cards ('' disables it)
     const SHOW_BUTTON    = true; // the hide/show button (the shortcut works either way)
@@ -349,7 +352,19 @@
             a.cumst-visited-row img { filter: none; }
 
             /* Top-RIGHT: the site puts its own platform badge (OnlyFans /
-               Fansly) at the top-left of every card. */
+               Fansly) at the top-left of every card, so the right corner is
+               the free one — except on video cards, where the site stacks its
+               duration (and quality) badges there in an absolutely positioned
+               flex column. On a visited card that stack slides down by the
+               badge's height plus a gap, so the two read as one column instead
+               of sitting on top of each other. The selector leans on the
+               layout classes (absolute, flex column, right-aligned) rather
+               than Tailwind's arbitrary spacing values, and pushes with
+               margin-top so the site's own `top` is left alone. */
+            a.cumst-visited > div.absolute.flex.flex-col.items-end {
+                margin-top: ${BADGE_PUSH};
+            }
+
             .cumst-badge {
                 position: absolute;
                 top: 6px;
