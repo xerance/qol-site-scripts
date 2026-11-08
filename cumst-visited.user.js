@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         CumstVisited
 // @namespace    https://github.com/xerance/qol-site-scripts
-// @version      1.3.2
+// @version      1.3.3
 // @description  cum.st (OnlyHaven): fade posts, DMs and creators you've already opened and show a "last viewed" timestamp on each, so unseen ones pop out of the grid. A button in the site's toolbar (or Alt+V) hides visited cards entirely.
 // @author       xerance
 // @match        *://cum.st/*
@@ -360,7 +360,7 @@
                of sitting on top of each other. The selector leans on the
                layout classes (absolute, flex column, right-aligned) rather
                than Tailwind's arbitrary spacing values, and pushes with
-               margin-top so the site's own `top` is left alone. */
+               margin-top so the site's own 'top' is left alone. */
             a.cumst-visited > div.absolute.flex.flex-col.items-end {
                 margin-top: ${BADGE_PUSH};
             }
