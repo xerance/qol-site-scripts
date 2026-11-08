@@ -29,6 +29,15 @@ corner**; it opens a filter panel that hides the languages you don't care about.
 
 Close the panel with its ×, with `Escape`, or by clicking anywhere outside it.
 
+## Install
+
+[**Install SubtitleCatLangFilter**](https://raw.githubusercontent.com/xerance/qol-site-scripts/master/subtitlecat-lang-filter.user.js) — open that link
+with Violentmonkey or Tampermonkey installed and it will offer to install the script.
+Installing from the link registers the update URL, so later fixes show up as an
+update prompt rather than needing a re-paste.
+
+Then open any subtitlecat.com subtitle page; the button appears in the bottom-right corner.
+
 ## Notes
 
 - Hiding is pure CSS on the grid column, so nothing about the page's own behaviour changes:

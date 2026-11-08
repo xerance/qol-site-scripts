@@ -71,12 +71,17 @@ At the top of the script:
 
 ## Install
 
-1. Have Violentmonkey/Tampermonkey installed.
-2. Add `cumst-visited.user.js` as a new script and save.
-3. Open `/posts` and click around — cards you've opened come back faded with a timestamp.
+[**Install CumstVisited**](https://raw.githubusercontent.com/xerance/qol-site-scripts/master/cumst-visited.user.js) — open that link with Violentmonkey or Tampermonkey
+installed and it will offer to install the script. Installing from the link registers
+the script's update URL, so later fixes show up as an update prompt rather than needing a re-paste.
 
-Pairs well with **CumstNoPopunders** — without it, a click on a card can be stolen by the
-site's popunder ad.
+You can also save the file and use your manager's "install from file" option, or paste the
+contents into a new script.
+
+Then open `/posts` and click around — cards you've opened come back faded with a timestamp.
+
+Pairs well with [**CumstNoPopunders**](https://raw.githubusercontent.com/xerance/qol-site-scripts/master/cumst-no-popunders.user.js) — without it, a click
+on a card can be stolen by the site's popunder ad.
 
 ## Clearing history
 

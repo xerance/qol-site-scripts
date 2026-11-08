@@ -84,14 +84,20 @@ At the top of the script:
 
 ## Install
 
-1. Have Violentmonkey/Tampermonkey installed.
-2. Add `pawchive-visited.user.js` as a new script and save.
-3. Open `/posts` and click around — cards you've opened come back faded with a timestamp.
+[**Install PawchiveVisited**](https://raw.githubusercontent.com/xerance/qol-site-scripts/master/pawchive-visited.user.js) — open that link with Violentmonkey or Tampermonkey
+installed and it will offer to install the script. Installing from the link registers
+the script's update URL, so later fixes show up as an update prompt rather than needing a re-paste.
+
+You can also save the file and use your manager's "install from file" option, or paste the
+contents into a new script.
+
+Then open `/posts` and click around — cards you've opened come back faded with a timestamp.
 
 Note that pawchive runs a popunder ad script, so a click on a card can open an ad window.
 This script ignores the synthetic clicks that ad script makes, so they can't record a visit
-or flip the toggle, but it doesn't block the ads themselves. **PawchiveNoPopunders**, in
-this same repo, does — the two are meant to be installed together.
+or flip the toggle, but it doesn't block the ads themselves.
+[**PawchiveNoPopunders**](https://raw.githubusercontent.com/xerance/qol-site-scripts/master/pawchive-no-popunders.user.js) does — the two are meant to be
+installed together.
 
 ## Clearing history
 

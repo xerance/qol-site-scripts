@@ -39,14 +39,17 @@ tabs within the same group.
 
 ## Install
 
-1. Install a userscript manager extension if you don't have one:
-   - **Violentmonkey** (recommended) or **Tampermonkey** — both are in the Firefox Add-ons store.
-2. Open `niya-visited.user.js` in this folder.
-3. Copy its contents into a new script in your userscript manager (dashboard → **+ / Create new script**),
-   paste, and **Save**.
-   - Or, if you put this file somewhere your manager can reach it, use its "install from file" option.
-4. Visit niyaniya.moe or hdoujin.org, open a gallery, then go back to the listing — it should
-   be highlighted with a timestamp.
+[**Install NiyaVisited**](https://raw.githubusercontent.com/xerance/qol-site-scripts/master/niya-visited.user.js) — open that link with Violentmonkey or Tampermonkey
+installed and it will offer to install the script. Installing from the link registers
+the script's update URL, so later fixes show up as an update prompt rather than needing a re-paste.
+
+You can also save the file and use your manager's "install from file" option, or paste the
+contents into a new script.
+
+Its companion is [**NiyaTags**](https://raw.githubusercontent.com/xerance/qol-site-scripts/master/niya-tags.user.js), installed the same way.
+
+Then visit niyaniya.moe or hdoujin.org, open a gallery and go back to the listing — it should
+be highlighted with a timestamp.
 
 ## Customizing the look
 

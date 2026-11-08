@@ -28,10 +28,15 @@ game grid, in the spirit of NiyaVisited.
 
 ## Install
 
-1. Have Violentmonkey/Tampermonkey installed.
-2. Add `f95-visited.user.js` as a new script and save.
-3. Log into f95zone, open **Latest Updates**, click some games — they'll be highlighted with
-   timestamps, and ones that have updated since you saw them get the UPDATE flag.
+[**Install F95Visited**](https://raw.githubusercontent.com/xerance/qol-site-scripts/master/f95-visited.user.js) — open that link with Violentmonkey or Tampermonkey
+installed and it will offer to install the script. Installing from the link registers
+the script's update URL, so later fixes show up as an update prompt rather than needing a re-paste.
+
+You can also save the file and use your manager's "install from file" option, or paste the
+contents into a new script.
+
+Then log into f95zone, open **Latest Updates** and click some games — they'll be highlighted
+with timestamps, and ones that have updated since you saw them get the UPDATE flag.
 
 ## Clearing history
 
