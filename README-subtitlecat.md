@@ -1,5 +1,7 @@
 # SubtitleCatLangFilter — `subtitlecat-lang-filter.user.js`
 
+**Current version: 1.2.0**
+
 For **subtitlecat.com** subtitle pages (e.g. `/subs/1324/<title>.html`), which list ~150
 languages in one long grid. This adds a **floating "🌐 Languages" button in the bottom-right
 corner**; it opens a filter panel that hides the languages you don't care about.

@@ -1,5 +1,7 @@
 # F95Visited
 
+**Current version: 1.1.0**
+
 A userscript for **f95zone.to** — "last viewed" tracking for the **Latest Updates (SAM)**
 game grid, in the spirit of NiyaVisited.
 

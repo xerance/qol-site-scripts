@@ -83,17 +83,17 @@ shows how many of the languages are still on screen.
 1. Install **Violentmonkey** or **Tampermonkey**.
 2. Click the install link for each script you want. Your manager will offer to install it.
 
-| Script | Site | |
-| --- | --- | --- |
-| NiyaVisited | niyaniya.moe / hdoujin.org / shupogaki.moe | [install](https://raw.githubusercontent.com/xerance/qol-site-scripts/master/niya-visited.user.js) |
-| NiyaTags | niyaniya.moe / hdoujin.org / shupogaki.moe | [install](https://raw.githubusercontent.com/xerance/qol-site-scripts/master/niya-tags.user.js) |
-| F95Visited | f95zone.to | [install](https://raw.githubusercontent.com/xerance/qol-site-scripts/master/f95-visited.user.js) |
-| CumstVisited | cum.st | [install](https://raw.githubusercontent.com/xerance/qol-site-scripts/master/cumst-visited.user.js) |
-| CumstNoPopunders | cum.st | [install](https://raw.githubusercontent.com/xerance/qol-site-scripts/master/cumst-no-popunders.user.js) |
-| CumstVideoViewer | cum.st | [install](https://raw.githubusercontent.com/xerance/qol-site-scripts/master/cumst-video-viewer.user.js) |
-| PawchiveVisited | pawchive.pw | [install](https://raw.githubusercontent.com/xerance/qol-site-scripts/master/pawchive-visited.user.js) |
-| PawchiveNoPopunders | pawchive.pw | [install](https://raw.githubusercontent.com/xerance/qol-site-scripts/master/pawchive-no-popunders.user.js) |
-| SubtitleCatLangFilter | subtitlecat.com | [install](https://raw.githubusercontent.com/xerance/qol-site-scripts/master/subtitlecat-lang-filter.user.js) |
+| Script | Site | Version | |
+| --- | --- | --- | --- |
+| NiyaVisited | niyaniya.moe / hdoujin.org / shupogaki.moe | 2.1.3 | [install](https://raw.githubusercontent.com/xerance/qol-site-scripts/master/niya-visited.user.js) |
+| NiyaTags | niyaniya.moe / hdoujin.org / shupogaki.moe | 2.3.3 | [install](https://raw.githubusercontent.com/xerance/qol-site-scripts/master/niya-tags.user.js) |
+| F95Visited | f95zone.to | 1.1.0 | [install](https://raw.githubusercontent.com/xerance/qol-site-scripts/master/f95-visited.user.js) |
+| CumstVisited | cum.st | 1.3.4 | [install](https://raw.githubusercontent.com/xerance/qol-site-scripts/master/cumst-visited.user.js) |
+| CumstNoPopunders | cum.st | 1.0.0 | [install](https://raw.githubusercontent.com/xerance/qol-site-scripts/master/cumst-no-popunders.user.js) |
+| CumstVideoViewer | cum.st | 1.0.0 | [install](https://raw.githubusercontent.com/xerance/qol-site-scripts/master/cumst-video-viewer.user.js) |
+| PawchiveVisited | pawchive.pw | 1.0.2 | [install](https://raw.githubusercontent.com/xerance/qol-site-scripts/master/pawchive-visited.user.js) |
+| PawchiveNoPopunders | pawchive.pw | 1.0.0 | [install](https://raw.githubusercontent.com/xerance/qol-site-scripts/master/pawchive-no-popunders.user.js) |
+| SubtitleCatLangFilter | subtitlecat.com | 1.2.0 | [install](https://raw.githubusercontent.com/xerance/qol-site-scripts/master/subtitlecat-lang-filter.user.js) |
 
 They're independent — install any subset. Installing from these links registers each
 script's update URL, so later fixes arrive as an update prompt; saving the file and using your

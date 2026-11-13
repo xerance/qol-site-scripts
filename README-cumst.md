@@ -1,5 +1,7 @@
 # CumstVisited
 
+**Current version: 1.3.4**
+
 A userscript for **cum.st** (OnlyHaven) — "last viewed" tracking for the post, DM and creator
 listings, in the spirit of NiyaVisited and F95Visited.
 

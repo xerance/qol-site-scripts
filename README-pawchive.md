@@ -1,5 +1,7 @@
 # PawchiveVisited
 
+**Current version: 1.0.2**
+
 A userscript for **pawchive.pw** — "last viewed" tracking for the post and creator
 listings, in the spirit of NiyaVisited, F95Visited and CumstVisited.
 

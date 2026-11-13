@@ -1,5 +1,7 @@
 # NiyaVisited
 
+**Current version: 2.1.3**
+
 A small userscript for **niyaniya.moe**, **hdoujin.org**, and **shupogaki.moe** (same site, multiple mirror domains).
 
 It does two things, ported from the much bigger *EhxVisited* script:
@@ -81,6 +83,8 @@ The history now lives in your userscript manager, not in the page, so clear it t
 ---
 
 # NiyaTags (companion script)
+
+**Current version: 2.3.3**
 
 `niya-tags.user.js` is a **separate** userscript in this folder — your own "My Tags"
 system (like E‑Hentai's), independent of NiyaVisited so you can install/toggle it on its
