@@ -81,7 +81,9 @@ contents into a new script.
 Then open `/posts` and click around — cards you've opened come back faded with a timestamp.
 
 Pairs well with [**CumstNoPopunders**](https://raw.githubusercontent.com/xerance/qol-site-scripts/master/cumst-no-popunders.user.js) — without it, a click
-on a card can be stolen by the site's popunder ad.
+on a card can be stolen by the site's popunder ad. Either way, only a click you
+actually made counts: the synthetic clicks that ad script dispatches are ignored,
+so they can't record a visit or flip the hide toggle on you.
 
 ## Clearing history
 

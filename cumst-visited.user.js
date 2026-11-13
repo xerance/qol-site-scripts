@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         CumstVisited
 // @namespace    https://github.com/xerance/qol-site-scripts
-// @version      1.3.3
+// @version      1.3.4
 // @description  cum.st (OnlyHaven): fade posts, DMs and creators you've already opened and show a "last viewed" timestamp on each, so unseen ones pop out of the grid. A button in the site's toolbar (or Alt+V) hides visited cards entirely.
 // @author       xerance
 // @match        *://cum.st/*
@@ -194,6 +194,9 @@
     ╚───────────────────────────────────────────────────────────────────────*/
     function onCardClick(e) {
         if (e.button === 2) return; // ignore right-click
+        // The site runs a popunder ad script, and those re-dispatch clicks of
+        // their own. Only a click the user actually made counts as a visit.
+        if (e.isTrusted === false) return;
         const a = e.target.closest && e.target.closest('a[href]');
         if (!a) return;
         record(keyFromHref(a.getAttribute('href')));
@@ -278,6 +281,9 @@
             btn.addEventListener('click', e => {
                 e.preventDefault();
                 e.stopPropagation();
+                // Same reason as onCardClick: the ad script's own synthetic
+                // clicks shouldn't flip the toggle behind your back.
+                if (e.isTrusted === false) return;
                 toggleHide(false);
             });
         }
