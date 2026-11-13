@@ -154,9 +154,9 @@ the group color once the tag is in a group):
 
 Stored in your userscript manager (like NiyaVisited). Keys:
 
-- `niya-tags-config` — your on/off toggle and your groups (`{id, kind, name, color, tags[]}`).
-  Upgrading from v1.x auto‑migrates your old highlight/warn lists into a **Highlight 1** and
-  **Warn 1** group, keeping their colors and tags.
+- `niya-tags-config` — your groups (`{id, kind, name, color, tags[]}`) and the two display
+  options. Upgrading from v1.x auto‑migrates your old highlight/warn lists into a
+  **Highlight 1** and **Warn 1** group, keeping their colors and tags.
 - `niya-tags-cache` — cached gallery→tags (grouped `ny:`/`hd:` like visited). Wipe it with
   the **Clear tag cache** button in settings.
 - `niya-tags-vocab` — the cached tag vocabulary for the picker (real API tags + `/tags`),
