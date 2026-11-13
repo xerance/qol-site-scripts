@@ -100,3 +100,17 @@ script's update URL, so later fixes arrive as an update prompt; saving the file 
 manager's "install from file" option, or pasting the contents into a new script, works too.
 
 See each script's README for settings, storage keys, and how to clear history.
+
+## Maintaining
+
+A version shows up in two places: the table above, and the line under each script's own
+README heading. Both are generated from the `@version` headers, so after bumping a script
+run:
+
+```sh
+node tools/sync-readme-versions.js
+```
+
+It rewrites whatever drifted and says what it touched; a run on an already-current tree
+changes nothing. `--check` reports drift without writing, and exits non-zero if the docs
+are stale.
