@@ -114,7 +114,8 @@ own. It marks galleries whose tags match your lists, as colored chips on the car
 
 ### Settings window
 
-- Flip **Enable tag highlighting** on.
+- Highlighting is always on — there's no master switch to forget. A gallery is only
+  marked once one of your groups actually has a tag in it, so an empty setup is quiet.
 - **Load on‑screen galleries first** (default on): visible cards load before off‑screen ones,
   re‑prioritized as you scroll. Turn it **off** to load strictly top‑to‑bottom instead.
 - **Show namespace initial on chips** (default off): card chips prefix the namespace, e.g.
@@ -146,9 +147,8 @@ the group color once the tag is in a group):
   to add the tag there; click again to remove it. A tag can be in **multiple** groups.
 - Tags already in a group are **tinted** with that group's color right on the page (the
   highest‑precedence group's color if it's in several), so you see your picks in context.
-- The ＋ buttons are always there, even with **Enable tag highlighting** off — that
-  switch only controls the on‑page tints and the chips on listing cards, not your
-  ability to tag.
+- The ＋ buttons are on every gallery page, always: tagging is never gated behind
+  another setting.
 
 ## Storage / clearing
 

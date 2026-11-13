@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NiyaTags
 // @namespace    https://github.com/xerance/qol-site-scripts
-// @version      2.3.2
+// @version      2.3.3
 // @description  Your own "My Tags" for niyaniya.moe / hdoujin.org / shupogaki.moe — group tags into any number of highlight/warn groups, each with its own color; matching galleries get colored chips + ring. Settings window + on-page tagging included.
 // @author       xerance
 // @match        *://niyaniya.moe/*
@@ -25,7 +25,7 @@
     const RETRY_COOLDOWN = 60000;  // ms before re-trying a gallery whose fetch returned no tags
     const MASTER_TTL     = 7 * 864e5; // re-fetch the suggestion vocab weekly
 
-    const CFG_KEY   = 'niya-tags-config'; // { enabled, groups:[{id,kind,name,color,tags[]}] }
+    const CFG_KEY   = 'niya-tags-config'; // { groups:[{id,kind,name,color,tags[]}] }
     const CACHE_KEY = 'niya-tags-cache';  // { "grp:id": { tags:[...], ts } }
     const VOCAB_KEY = 'niya-tags-vocab';  // { [grp]: { tags:[...], ts } }
 
@@ -103,7 +103,6 @@
     ╚───────────────────────────────────────────────────────────────────────*/
     function normalizeCfg(raw) {
         raw = raw && typeof raw === 'object' ? raw : {};
-        const enabled = !!raw.enabled;
         let groups = Array.isArray(raw.groups) ? raw.groups : null;
         if (!groups) {
             // migrate v1.x: { highlightColor, warnColor, highlight[], warn[] }
@@ -121,7 +120,6 @@
             }));
         }
         return {
-            enabled,
             visibleFirst: raw.visibleFirst !== false, // default: load on-screen first
             showNsPrefix: !!raw.showNsPrefix,         // default: off (chip shows bare name)
             groups,
@@ -371,7 +369,7 @@
 
             const pg = primaryGroup(tag);
             const n = cfg.groups.filter(g => g.tags.includes(tag)).length;
-            if (pg && cfg.enabled) { a.style.boxShadow = 'inset 0 0 0 2px ' + pg.color; a.style.background = hexToRgba(pg.color, 0.18); a.classList.add('niyat-g-on'); }
+            if (pg) { a.style.boxShadow = 'inset 0 0 0 2px ' + pg.color; a.style.background = hexToRgba(pg.color, 0.18); a.classList.add('niyat-g-on'); }
             else { a.style.boxShadow = ''; a.style.background = ''; a.classList.remove('niyat-g-on'); }
 
             const btn = ctl.querySelector('.niyat-g-btn');
@@ -407,12 +405,12 @@
             clearDecorations();
             const inlined = injectGallerySettingsButton();
             if (gear) gear.style.display = inlined ? 'none' : '';
-            decorateGalleryTags(); // the per-tag + controls are the editing UI: they stay even when highlighting is off
+            decorateGalleryTags();
             return;
         }
         if (gear) gear.style.display = '';
 
-        if (!cfg.enabled || !cfg.groups.some(g => g.tags.length)) { clearDecorations(); return; }
+        if (!cfg.groups.some(g => g.tags.length)) { clearDecorations(); return; }
 
         const seen = new Set();
         document.querySelectorAll('a[href^="/g/"]').forEach(a => {
@@ -492,7 +490,6 @@
         <div class="niyat-panel">
             <div class="niyat-head"><span>NiyaTags</span><button class="niyat-close" title="Close">✕</button></div>
             <div class="niyat-body">
-                <label class="niyat-row"><input type="checkbox" class="niyat-enabled"> <b>Enable tag highlighting</b></label>
                 <p class="niyat-hint">Cards are checked against your groups below. First view of a page fetches each gallery's tags (throttled) and caches them.</p>
                 <label class="niyat-row niyat-opt"><input type="checkbox" class="niyat-visfirst"> Load on‑screen galleries first <span class="niyat-opthint">(off = top to bottom)</span></label>
                 <label class="niyat-row niyat-opt"><input type="checkbox" class="niyat-nsprefix"> Show namespace initial on chips <span class="niyat-opthint">(e.g. <code>f:tanned</code>)</span></label>
@@ -519,12 +516,10 @@
         document.body.appendChild(overlay);
 
         const $ = sel => overlay.querySelector(sel);
-        const enabled = $('.niyat-enabled');
         const search = $('.niyat-search');
         const target = $('.niyat-target');
         const results = $('.niyat-results');
         const status = $('.niyat-status');
-        enabled.checked = cfg.enabled;
         const visfirst = $('.niyat-visfirst'); visfirst.checked = cfg.visibleFirst;
         const nsprefix = $('.niyat-nsprefix'); nsprefix.checked = cfg.showNsPrefix;
 
@@ -649,7 +644,6 @@
             renderRows(rows.slice(0, 60));
         }
 
-        enabled.onchange = () => { cfg.enabled = enabled.checked; commit(); refreshGallery(); };
         visfirst.onchange = () => { cfg.visibleFirst = visfirst.checked; saveCfg(); };
         nsprefix.onchange = () => { cfg.showNsPrefix = nsprefix.checked; commit(); };
         search.oninput = renderResults;
