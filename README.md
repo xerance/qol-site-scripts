@@ -112,5 +112,15 @@ node tools/sync-readme-versions.js
 ```
 
 It rewrites whatever drifted and says what it touched; a run on an already-current tree
-changes nothing. `--check` reports drift without writing, and exits non-zero if the docs
-are stale.
+changes nothing. `--check` reports drift without writing and exits non-zero. Nothing is
+hand-listed — scripts are found by globbing `*.user.js` and matched to a README heading by
+their `@name`, so a new script is picked up as soon as it exists.
+
+To have the check run on every commit:
+
+```sh
+cp tools/pre-commit .git/hooks/pre-commit
+```
+
+It only ever refuses a commit, never edits or stages anything for you: fix it with the
+sync command above, or pass `git commit --no-verify` to skip it once.
