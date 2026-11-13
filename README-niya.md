@@ -146,7 +146,9 @@ the group color once the tag is in a group):
   to add the tag there; click again to remove it. A tag can be in **multiple** groups.
 - Tags already in a group are **tinted** with that group's color right on the page (the
   highest‑precedence group's color if it's in several), so you see your picks in context.
-- The buttons/tints appear when the system is enabled.
+- The ＋ buttons are always there, even with **Enable tag highlighting** off — that
+  switch only controls the on‑page tints and the chips on listing cards, not your
+  ability to tag.
 
 ## Storage / clearing
 

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NiyaTags
 // @namespace    https://github.com/xerance/qol-site-scripts
-// @version      2.3.1
+// @version      2.3.2
 // @description  Your own "My Tags" for niyaniya.moe / hdoujin.org / shupogaki.moe — group tags into any number of highlight/warn groups, each with its own color; matching galleries get colored chips + ring. Settings window + on-page tagging included.
 // @author       xerance
 // @match        *://niyaniya.moe/*
@@ -371,7 +371,7 @@
 
             const pg = primaryGroup(tag);
             const n = cfg.groups.filter(g => g.tags.includes(tag)).length;
-            if (pg) { a.style.boxShadow = 'inset 0 0 0 2px ' + pg.color; a.style.background = hexToRgba(pg.color, 0.18); a.classList.add('niyat-g-on'); }
+            if (pg && cfg.enabled) { a.style.boxShadow = 'inset 0 0 0 2px ' + pg.color; a.style.background = hexToRgba(pg.color, 0.18); a.classList.add('niyat-g-on'); }
             else { a.style.boxShadow = ''; a.style.background = ''; a.classList.remove('niyat-g-on'); }
 
             const btn = ctl.querySelector('.niyat-g-btn');
@@ -379,11 +379,6 @@
             btn.classList.toggle('active', n > 0);
             btn.style.background = n && pg ? pg.color : '';
         });
-    }
-    function clearGalleryTagDecor() {
-        closeGroupMenu();
-        document.querySelectorAll('.niyat-g-ctl').forEach(e => e.remove());
-        document.querySelectorAll('a.niyat-g-on').forEach(a => { a.classList.remove('niyat-g-on'); a.style.boxShadow = ''; a.style.background = ''; });
     }
 
     // NiyaTags button in the gallery's Copy Tags / Copy Link / Source row (right-aligned).
@@ -412,7 +407,7 @@
             clearDecorations();
             const inlined = injectGallerySettingsButton();
             if (gear) gear.style.display = inlined ? 'none' : '';
-            if (cfg.enabled) decorateGalleryTags(); else clearGalleryTagDecor();
+            decorateGalleryTags(); // the per-tag + controls are the editing UI: they stay even when highlighting is off
             return;
         }
         if (gear) gear.style.display = '';
@@ -768,7 +763,7 @@
             if (!remote) return;
             cfg = loadCfg();
             applyToCards();
-            if (isGalleryPage() && cfg.enabled) decorateGalleryTags();
+            if (isGalleryPage()) decorateGalleryTags();
         });
     }
 
