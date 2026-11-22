@@ -1,6 +1,6 @@
 # PawchiveVisited
 
-**Current version: 1.0.2**
+**Current version: 1.1.0**
 
 A userscript for **pawchive.pw** — "last viewed" tracking for the post and creator
 listings, in the spirit of NiyaVisited, F95Visited and CumstVisited.
@@ -14,6 +14,12 @@ listings, in the spirit of NiyaVisited, F95Visited and CumstVisited.
 - **Fades creator cards you've already opened** on `/artists`. They're text over a banner
   *background image*, which no filter on an `<img>` would touch, so the whole card is faded
   with opacity instead.
+- **Flags a creator who has posted since you last looked.** Every creator card carries the
+  creator's last-updated stamp; when that stamp has moved on since your visit, the card goes
+  back to full strength with an orange ring and an **`⬆ NEW`** flag in place of the
+  timestamp, so it stands out among the faded ones instead of reading as already seen. It
+  doesn't count towards the "Hide visited" total and **"Hide visited" leaves it on screen** —
+  there's new work there, so it isn't really visited. Opening it clears the flag.
 - **"Last viewed" timestamp** on every visited card (`👁 3h`), in the top-right corner — a
   post card's title sits top-left and its date and service icon run along the bottom. Hover
   it for the full date.
@@ -50,8 +56,11 @@ search results.
   printed inside a DM or a comment is a bare text link and is left alone, and so are clicks
   the site's popunder ad script dispatches by itself.
 - Data lives in your **userscript manager's** storage (`GM_setValue`) under
-  `pawchive-visited`, as a `{ "kind:service:id": timestamp }` map — so it survives the site
-  clearing its own storage. Without the GM grants it falls back to the site's `localStorage`
+  `pawchive-visited`, as a `{ "kind:service:id": { t, u } }` map — `t` is when you looked and
+  `u` is the creator's last-updated stamp as it read at the time, which is what the `⬆ NEW`
+  flag compares against. Entries written by older versions were a bare timestamp and are still
+  read; they pick up a `u` the first time you see the card again. Storing it this way means it
+  survives the site clearing its own storage. Without the GM grants it falls back to `localStorage`
   under the same key. The hide toggle is a second, separate value, `pawchive-visited-hide`.
 - Tabs stay in sync: a post opened in a second tab records there, and the listing behind it
   repaints without a reload.
@@ -79,6 +88,8 @@ At the top of the script:
 | `DIM_TITLE` | `0.55` | fade for a visited post card's title and footer |
 | `USER_OPACITY` / `USER_HOVER` | `0.45` / `0.9` | fade for visited creator cards |
 | `BADGE_BG` / `BADGE_FG` | blue / white | the timestamp pill's colours |
+| `TRACK_UPDATES` | `true` | set `false` to stop flagging creators who posted since your visit |
+| `UPDATE_BG` | orange | the `⬆ NEW` ring and flag colour |
 | `TRACK_CREATORS` | `true` | set `false` to track only posts, not creator pages |
 | `SHOW_BUTTON` | `true` | set `false` to drop the button and use only the shortcut |
 | `BUTTON_IN_BAR` | `true` | set `false` to float the button in the bottom-right corner instead of putting it above the listing |

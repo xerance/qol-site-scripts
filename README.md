@@ -91,7 +91,7 @@ shows how many of the languages are still on screen.
 | CumstVisited | cum.st | 1.3.4 | [install](https://raw.githubusercontent.com/xerance/qol-site-scripts/master/cumst-visited.user.js) |
 | CumstNoPopunders | cum.st | 1.0.0 | [install](https://raw.githubusercontent.com/xerance/qol-site-scripts/master/cumst-no-popunders.user.js) |
 | CumstVideoViewer | cum.st | 1.0.0 | [install](https://raw.githubusercontent.com/xerance/qol-site-scripts/master/cumst-video-viewer.user.js) |
-| PawchiveVisited | pawchive.pw | 1.0.2 | [install](https://raw.githubusercontent.com/xerance/qol-site-scripts/master/pawchive-visited.user.js) |
+| PawchiveVisited | pawchive.pw | 1.1.0 | [install](https://raw.githubusercontent.com/xerance/qol-site-scripts/master/pawchive-visited.user.js) |
 | PawchiveNoPopunders | pawchive.pw | 1.0.0 | [install](https://raw.githubusercontent.com/xerance/qol-site-scripts/master/pawchive-no-popunders.user.js) |
 | SubtitleCatLangFilter | subtitlecat.com | 1.2.0 | [install](https://raw.githubusercontent.com/xerance/qol-site-scripts/master/subtitlecat-lang-filter.user.js) |
 

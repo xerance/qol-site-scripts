@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         PawchiveVisited
 // @namespace    https://github.com/xerance/qol-site-scripts
-// @version      1.0.2
+// @version      1.1.0
 // @description  pawchive.pw: fade posts and creators you've already opened and show a "last viewed" timestamp on each, so unseen ones pop out of the grid. A button above the listing (or Alt+V) hides visited cards entirely.
 // @author       xerance
 // @match        *://pawchive.pw/*
@@ -28,6 +28,8 @@
     const USER_HOVER     = 0.9;
     const BADGE_BG       = 'rgba(32, 139, 207, 0.92)';
     const BADGE_FG       = '#ffffff';
+    const TRACK_UPDATES  = true; // flag a visited creator whose listing stamp moved on
+    const UPDATE_BG      = 'rgba(255, 140, 0, 0.97)'; // the "updated" ring and badge
     const TRACK_CREATORS = true; // set false to track only posts, not creator pages
     const HIDE_KEY       = 'v';  // Alt + this key hides/shows visited cards ('' disables it)
     const SHOW_BUTTON    = true; // the hide/show button (the shortcut works either way)
@@ -74,13 +76,30 @@
 
     // Re-read -> merge -> write, so a write from another tab at the same moment
     // isn't clobbered.
-    function record(key) {
+    // An entry used to be a bare timestamp. It's now { t, u }: when you looked,
+    // and the creator's "last updated" stamp as it read at that moment. Old
+    // numbers are still accepted on read, so nobody loses their history.
+    const entryOf = raw => (typeof raw === 'number' ? { t: raw } : (raw || null));
+
+    function record(key, stamp) {
         if (!key) return;
         const s = loadStore();
-        s[key] = Date.now();
+        const prev = entryOf(s[key]) || {};
+        s[key] = { t: Date.now(), u: stamp || prev.u };
         writeStore(s);
         store = s;
         paint();
+    }
+
+    // Record the stamp against a visit that didn't have one, without touching
+    // the visit time itself.
+    function adoptStamp(key, stamp) {
+        const s = loadStore();
+        const prev = entryOf(s[key]);
+        if (!prev || prev.u === stamp) return;
+        s[key] = { t: prev.t, u: stamp };
+        writeStore(s);
+        store = s;
     }
 
     /*───────────────────────────────────────────────────────────────────────╗
@@ -156,24 +175,65 @@
 
         document.querySelectorAll(POST_CARD).forEach(card => {
             const a = card.querySelector('a[href]');
-            const ts = a ? store[keyFromHref(a.getAttribute('href'))] : undefined;
-            if (!ts) { clear(card); return; }
+            const entry = a ? entryOf(store[keyFromHref(a.getAttribute('href'))]) : null;
+            if (!entry) { clear(card); return; }
             visitedHere++;
-            mark(card, 'pawv-visited', ts);
+            // A post's stamp is when it was published, which doesn't move, so
+            // there is nothing here to go stale.
+            mark(card, 'pawv-visited', entry.t, false);
         });
 
         document.querySelectorAll(USER_CARD).forEach(a => {
-            const ts = store[keyFromHref(a.getAttribute('href'))];
-            if (!ts) { clear(a); return; }
-            visitedHere++;
-            mark(a, 'pawv-visited-user', ts);
+            const key = keyFromHref(a.getAttribute('href'));
+            const entry = entryOf(store[key]);
+            if (!entry) { clear(a); return; }
+            const updated = isUpdated(key, a, entry);
+            // An updated creator isn't "seen", so it doesn't count towards the
+            // hide button and "hide visited" leaves it on screen.
+            if (!updated) visitedHere++;
+            mark(a, 'pawv-visited-user', entry.t, updated);
         });
 
         updateButton(visitedHere);
     }
 
-    function mark(el, kind, ts) {
+    /*───────────────────────────────────────────────────────────────────────╗
+    │  "Updated since you looked"                                              │
+    │                                                                          │
+    │  Every creator card carries the creator's last-updated stamp, in UTC    │
+    │  and rounded down to the hour. We record that stamp alongside the visit, │
+    │  so the test is an exact string comparison rather than a clock sum —     │
+    │  no timezone to get wrong, and it still works if the site restates the   │
+    │  same time differently.                                                  │
+    │                                                                          │
+    │  The hour rounding is the one real limit: a second update inside the     │
+    │  same hour as your visit reads as the same stamp and won't flag until    │
+    │  the hour rolls over.                                                    │
+    ╚───────────────────────────────────────────────────────────────────────*/
+    function cardStamp(el) {
+        const t = el.querySelector('time[datetime]');
+        const v = t && t.getAttribute('datetime');
+        return v ? v.trim() : null;
+    }
+
+    function isUpdated(key, el, entry) {
+        if (!TRACK_UPDATES) return false;
+        const stamp = cardStamp(el);
+        if (!stamp) return false;
+        if (entry.u) return stamp !== entry.u;
+        // No stamp on record: a visit made before this existed, or one made
+        // straight from the creator's own page, where no card was in sight.
+        // Fall back to the clock once — the stamps are UTC — and then adopt
+        // the stamp so every later check is the exact comparison above.
+        const when = Date.parse(stamp.replace(' ', 'T') + 'Z');
+        if (Number.isFinite(when) && when > entry.t) return true;
+        adoptStamp(key, stamp);
+        return false;
+    }
+
+    function mark(el, kind, ts, updated) {
         el.classList.add('pawv-visited', kind);
+        el.classList.toggle('pawv-updated', !!updated);
         let badge = el.querySelector(':scope > .pawv-badge');
         if (!badge) {
             badge = document.createElement('div');
@@ -182,15 +242,16 @@
         }
         // Only write when the value actually changes — otherwise every paint
         // mutates the DOM, which wakes the observer below, forever.
-        const label = '\u{1F441} ' + relTime(ts);
+        const label = updated ? '⬆ NEW' : '\u{1F441} ' + relTime(ts);
         if (badge.textContent !== label) badge.textContent = label;
-        const title = 'Last viewed ' + fullTime(ts);
+        const title = (updated ? 'Updated since you last looked — you were here '
+                               : 'Last viewed ') + fullTime(ts);
         if (badge.title !== title) badge.title = title;
     }
 
     function clear(el) {
         if (!el.classList.contains('pawv-visited')) return;
-        el.classList.remove('pawv-visited', 'pawv-visited-user');
+        el.classList.remove('pawv-visited', 'pawv-visited-user', 'pawv-updated');
         const badge = el.querySelector(':scope > .pawv-badge');
         if (badge) badge.remove();
     }
@@ -214,7 +275,9 @@
         // Only cards, not the creator name printed inside a DM or a comment:
         // those are bare text links, and marking them would fade stray words.
         if (!a.matches(USER_CARD) && !a.closest(POST_CARD)) return;
-        record(keyFromHref(a.getAttribute('href')));
+        // Take the card's update stamp with us: this is the one moment we can
+        // see it, and it's what later tells a stale card from a fresh one.
+        record(keyFromHref(a.getAttribute('href')), a.matches(USER_CARD) ? cardStamp(a) : null);
     }
 
     let lastRecordedPath = '';
@@ -400,6 +463,14 @@
             a.pawv-visited-user { opacity: ${USER_OPACITY}; transition: opacity .15s ease; }
             a.pawv-visited-user:hover { opacity: ${USER_HOVER}; }
 
+            /* Updated since you last looked: back to full strength, with a
+               ring and an orange flag in place of the timestamp, so it reads
+               as something new rather than something already seen. */
+            a.pawv-visited-user.pawv-updated,
+            a.pawv-visited-user.pawv-updated:hover { opacity: 1; }
+            .pawv-updated { box-shadow: 0 0 0 2px ${UPDATE_BG}; border-radius: 4px; }
+            .pawv-updated > .pawv-badge { background: ${UPDATE_BG}; color: #111; font-weight: 800; }
+
             /* Top-right: a post card's title sits top-left, its date and
                service icon along the bottom. */
             .pawv-badge {
@@ -420,7 +491,7 @@
             /* Alt+V: drop visited cards out of the listing entirely. Both card
                lists reflow on their own. */
             html.pawv-hide-visited article.pawv-visited,
-            html.pawv-hide-visited a.pawv-visited-user { display: none !important; }
+            html.pawv-hide-visited a.pawv-visited-user:not(.pawv-updated) { display: none !important; }
 
             /* The button's own bar, directly above the listing. */
             .pawv-bar {
